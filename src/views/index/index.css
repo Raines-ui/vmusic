@@ -7,6 +7,7 @@
   justify-content: flex-start;
   align-items: center;
   color: #ffffff;
+  height: 100%;
 }
 
 .title img {
@@ -14,11 +15,32 @@
   margin-right: 20px;
 }
 
-.aside{
+.aside {
   background-color: #314057;
 }
 
-.accordion{
+.aside >>> .el-sub-menu__title {
+  color: #f0f8ff;
+}
+
+.aside >>> .el-sub-menu__title:hover {
+  background-color: #283446;
+}
+
+.aside >>> .el-menu-item {
+  background-color: #314057;
+  color: #f0f8ff;
+}
+
+.aside >>> .el-menu-item:hover {
+  background-color: #283446;
+}
+
+.aside >>> .is-active {
+  background-color: #283446;
+}
+
+.accordion {
   line-height: 50px;
   font-size: 18px;
   font-weight: bold;
@@ -31,10 +53,10 @@
   cursor: pointer;
 }
 
-.accordion-item >>>.el-collapse-item__header{
+.accordion-item >>> .el-collapse-item__header {
   line-height: 50px;
   background-color: #314057;
-  color: aliceblue!important;
+  color: aliceblue !important;
   font-size: 18px;
   font-weight: bold;
   padding: 20px;
@@ -48,7 +70,7 @@
   width: 100%;
 }
 
-.aside nav li {
+.aside .menu-item {
   list-style-type: none;
   line-height: 80px;
   background-color: #314057;
@@ -59,26 +81,26 @@
   cursor: pointer;
 }
 
-.aside nav li:hover{
+.aside .menu-item:hover {
   background-color: #283446;
 }
 
-.aside nav .active{
+.aside .active {
   background-color: #283446;
 }
 
-.aside nav li span {
+.aside .menu-item span {
   width: 200px;
   text-align: left;
   margin-left: 20px;
 }
 
-.aside nav li img {
+.aside .menu-item img {
   width: 45px;
   border-radius: 50%;
 }
 
-#baseChart{
+#baseChart {
   width: 500px;
   height: 500px;
 }

@@ -2,92 +2,40 @@
   <div class="common-layout">
     <el-container>
       <el-header class="header" height="80px">
-        <!-- <div class="title">
+        <div class="title">
           <img
             src="../../assets/logo.png"
             alt="网易云音乐数据展示平台"
             srcset="../../assets/logo.png"
           />
           <h1>网易云音乐数据展示平台</h1>
-        </div> -->
+        </div>
       </el-header>
       <el-container>
-        <el-aside width="200px" style="background-color: rgb(238, 241, 246)">
+        <el-aside width="300px">
           <el-scrollbar>
-            <el-menu :default-openeds="['1', '3']">
+            <el-menu :default-openeds="['1', '3']" class="aside">
               <el-sub-menu index="1">
                 <template #title>
-                  <el-icon><message /></el-icon>Navigator One
+                  <el-icon><histogram /></el-icon>综合数据
                 </template>
-                <el-menu-item-group>
-                  <template #title>Group 1</template>
-                  <el-menu-item index="1-1">Option 1</el-menu-item>
-                  <el-menu-item index="1-2">Option 2</el-menu-item>
-                </el-menu-item-group>
-                <el-menu-item-group title="Group 2">
-                  <el-menu-item index="1-3">Option 3</el-menu-item>
-                </el-menu-item-group>
-                <el-sub-menu index="1-4">
-                  <template #title>Option4</template>
-                  <el-menu-item index="1-4-1">Option 4-1</el-menu-item>
-                </el-sub-menu>
               </el-sub-menu>
               <el-sub-menu index="2">
                 <template #title>
-                  <el-icon><icon-menu /></el-icon>Navigator Two
+                  <el-icon><user-filled /></el-icon>热门歌手
                 </template>
-                <el-menu-item-group>
-                  <template #title>Group 1</template>
-                  <el-menu-item index="2-1">Option 1</el-menu-item>
-                  <el-menu-item index="2-2">Option 2</el-menu-item>
-                </el-menu-item-group>
-                <el-menu-item-group title="Group 2">
-                  <el-menu-item index="2-3">Option 3</el-menu-item>
-                </el-menu-item-group>
-                <el-sub-menu index="2-4">
-                  <template #title>Option 4</template>
-                  <el-menu-item index="2-4-1">Option 4-1</el-menu-item>
-                </el-sub-menu>
-              </el-sub-menu>
-              <el-sub-menu index="3">
-                <template #title>
-                  <el-icon><setting /></el-icon>Navigator Three
-                </template>
-                <el-menu-item-group>
-                  <template #title>Group 1</template>
-                  <el-menu-item index="3-1">Option 1</el-menu-item>
-                  <el-menu-item index="3-2">Option 2</el-menu-item>
-                </el-menu-item-group>
-                <el-menu-item-group title="Group 2">
-                  <el-menu-item index="3-3">Option 3</el-menu-item>
-                </el-menu-item-group>
-                <el-sub-menu index="3-4">
-                  <template #title>Option 4</template>
-                  <el-menu-item index="3-4-1">Option 4-1</el-menu-item>
-                </el-sub-menu>
+                <el-menu-item
+                  class="menu-item"
+                  v-for="(item, index) in artistslist"
+                  :key="index"
+                  :class="active == index ? 'active' : ''"
+                  @click="changeActive(index)"
+                  ><img :src="item.picUrl" alt="item.name" />
+                  <span>{{ item.name }}</span></el-menu-item
+                >
               </el-sub-menu>
             </el-menu>
           </el-scrollbar>
-        </el-aside>
-        <el-aside width="300px" class="aside">
-          <span class="accordion" style="padding: 0 20px">综合数据</span>
-          <el-collapse v-model="activeName" accordion class="accordion">
-            <el-collapse-item title="热门歌手" name="2" class="accordion-item">
-              <nav>
-                <ul>
-                  <li
-                    v-for="(item, index) in artistslist"
-                    :key="index"
-                    :class="active == index ? 'active' : ''"
-                    @click="changeActive(index)"
-                  >
-                    <img :src="item.picUrl" alt="item.name" />
-                    <span>{{ item.name }}</span>
-                  </li>
-                </ul>
-              </nav>
-            </el-collapse-item>
-          </el-collapse>
         </el-aside>
         <el-main>
           <el-space>
