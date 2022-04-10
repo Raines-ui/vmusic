@@ -12,8 +12,6 @@
 import { request } from "../../config/request";
 import { getCurrentInstance, defineExpose } from "vue";
 import axios from "axios";
-import { objectKeys } from "@antfu/utils";
-import { comment } from "postcss";
 // 应用实例
 const instance = getCurrentInstance();
 const globalProperty = instance.appContext.config.globalProperties;
@@ -21,7 +19,8 @@ const echarts = globalProperty.$echarts;
 function renderEcharts(curId) {
   axios.all([getbaseChart(curId), getComment(curId)]).then((res) => {
     renderBaseChart(res[0]);
-    renderCommentChart(res[1]);
+    mergeCommentArr(res[1]);
+    // renderCommentChart(res[1]);
   });
 }
 
@@ -44,27 +43,36 @@ const getbaseChart = function (curId) {
   return request(baseoptions);
 };
 
-// 整合数组，并使用echart渲染数据
-const renderCommentChart = function (res) {
-  const activeChart = echarts.init(document.getElementById("activeChart"));
+// 获取歌曲评论
+
+const getCommentInfo = function (item) {
+  let commentoptions = {
+    url: `/comment/music?id=${item.id}`,
+  };
+  return request(commentoptions);
+};
+
+//合并数组，热门歌曲以及评论数
+
+const mergeCommentArr = async function (res) {
   let songs = res.data.songs;
-  let commentArr = [];
-  //   let commentArr = new Array(songs.length)
-  //     .fill(null)
-  //     .map((item) => new Object());
-  songs.forEach((item) => {
-    let tempObj = {};
-    tempObj["name"] = item.name;
-    let commentoptions = {
-      url: `/comment/music?id=${item.id}`,
-    };
-    request(commentoptions).then((cmtRes) => {
-      tempObj["comments"] = cmtRes.data.total;
-      commentArr.push(tempObj);
-    });
-  });
-  console.log(commentArr);
-  console.log(commentArr[0]);
+  let lens = songs.length;
+  let commentArr = new Array(lens).fill(null).map((item) => new Object());
+  // for循环中异步请求数据可使用async await 避免出现获取不到数据的情况 ,forEach 和 map 无法使用async/await
+  for (let i = 0; i < lens; i++) {
+    commentArr[i]["name"] = songs[i].name;
+    const comments = await getCommentInfo(songs[i]);
+    commentArr[i]["comments"] = comments.data.total;
+  }
+  renderCommentChart(commentArr);
+};
+
+// 整合数组，并使用echart渲染数据
+const renderCommentChart = function (data) {
+  const activeChart = echarts.init(document.getElementById("activeChart"));
+  // const data = mergeCommentArr();
+  console.log(data);
+  console.log(data[0].comments);
   //   console.log(JSON.parse(commentArr[0]));
   //   let songsName = new Array(commentArr.length);
   //   let data = new Array(commentArr.length);
