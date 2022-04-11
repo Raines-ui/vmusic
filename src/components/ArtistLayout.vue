@@ -3,19 +3,20 @@
     <el-card>
       <div id="baseChart"></div>
     </el-card>
-    <el-card>
+    <el-card v-loading="loading">
       <div id="activeChart"></div>
     </el-card>
   </div>
 </template>
 <script setup>
 import { request } from "../../config/request";
-import { getCurrentInstance, defineExpose } from "vue";
+import { getCurrentInstance, defineExpose, ref } from "vue";
 import axios from "axios";
 // 应用实例
 const instance = getCurrentInstance();
 const globalProperty = instance.appContext.config.globalProperties;
 const echarts = globalProperty.$echarts;
+const loading = ref(false);
 function renderEcharts(curId) {
   axios.all([getbaseChart(curId), getComment(curId)]).then((res) => {
     renderBaseChart(res[0]);
@@ -55,6 +56,7 @@ const getCommentInfo = function (item) {
 //合并数组，热门歌曲以及评论数
 
 const mergeCommentArr = async function (res) {
+  loading.value = true;
   let songs = res.data.songs;
   let lens = songs.length;
   let commentArr = new Array(lens).fill(null).map((item) => new Object());
@@ -70,79 +72,52 @@ const mergeCommentArr = async function (res) {
 // 整合数组，并使用echart渲染数据
 const renderCommentChart = function (data) {
   const activeChart = echarts.init(document.getElementById("activeChart"));
-  // const data = mergeCommentArr();
-  console.log(data);
-  console.log(data[0].comments);
-  //   console.log(JSON.parse(commentArr[0]));
-  //   let songsName = new Array(commentArr.length);
-  //   let data = new Array(commentArr.length);
-  //   console.log(data);
-  //   commentArr.forEach((item, index) => {
-  //     // songsName[index] = item.name;
-  //     // comments[index] = item.comments;
-  //   });
+  const songsName = new Array(data.length);
+  const commentsArr = new Array(data.length);
+  data.map((item, index) => {
+    songsName[index] = item.name;
+    commentsArr[index] = item.comments;
+  });
+  loading.value = false;
+  console.log(songsName);
+  console.log(commentsArr);
   //echart 渲染数据
-  //   const data = [];
-  //   for (let i = 0; i < 5; ++i) {
-  //     data.push(Math.round(Math.random() * 200));
-  //   }
-  //   option = {
-  //     xAxis: {
-  //       max: "dataMax",
-  //     },
-  //     yAxis: {
-  //       type: "category",
-  //       data: ["A", "B", "C", "D", "E"],
-  //       inverse: true,
-  //       animationDuration: 300,
-  //       animationDurationUpdate: 300,
-  //       max: 2, // only the largest 3 bars will be displayed
-  //     },
-  //     series: [
-  //       {
-  //         realtimeSort: true,
-  //         name: "X",
-  //         type: "bar",
-  //         data: data,
-  //         label: {
-  //           show: true,
-  //           position: "right",
-  //           valueAnimation: true,
-  //         },
-  //       },
-  //     ],
-  //     legend: {
-  //       show: true,
-  //     },
-  //     animationDuration: 0,
-  //     animationDurationUpdate: 3000,
-  //     animationEasing: "linear",
-  //     animationEasingUpdate: "linear",
-  //   };
-  //   function run() {
-  //     for (var i = 0; i < data.length; ++i) {
-  //       if (data[i] > 100) {
-  //         data[i] = 100;
-  //         clearInterval();
-  //       } else {
-  //         data[i] += 2;
-  //       }
-  //     }
-  //     myChart.setOption({
-  //       series: [
-  //         {
-  //           type: "bar",
-  //           data,
-  //         },
-  //       ],
-  //     });
-  //   }
-  //   setTimeout(function () {
-  //     run();
-  //   }, 0);
-  //   setInterval(function () {
-  //     run();
-  //   }, 3000);
+  const activeOptions = {
+    grid: {
+      left: "20", // 固定左边刻度宽度
+      containLabel: true,
+    },
+    dataZoom: [
+      {
+        type: "inside",
+      },
+      {
+        type: "slider",
+      },
+    ],
+    tooltip: {
+      trigger: "axis",
+      axisPointer: {
+        type: "shadow",
+      },
+    },
+    xAxis: {
+      show: false,
+      type: "category",
+      data: songsName,
+    },
+    yAxis: {
+      type: "value",
+      data: commentsArr,
+    },
+    series: [
+      {
+        data: commentsArr,
+        type: "bar",
+      },
+    ],
+  };
+  activeChart.setOption(activeOptions);
 };
 
 const renderBaseChart = function (res) {
@@ -203,6 +178,10 @@ defineExpose({
 </script>
 <style scoped>
 #baseChart {
+  width: 300px;
+  height: 300px;
+}
+#activeChart {
   width: 300px;
   height: 300px;
 }
